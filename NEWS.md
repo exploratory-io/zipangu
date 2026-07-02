@@ -1,3 +1,14 @@
+# zipangu 0.3.3.1 (exploratory-io fork)
+
+## Fix
+
+- `convert_jyear(..., legacy = TRUE)` now correctly parses kansuji (kanji
+  numeral) era years, e.g. "令和三年" (previously only arabic-digit era years
+  like "令和3年" were recognized by the legacy path; the ICU-backed default
+  path already supported both forms). Adds a kansuji-numeral extraction
+  fallback in `convert_jyear_impl1()`, reusing the package's own
+  `kansuji2arabic_num()`. exploratory-io/tam#36712.
+
 # zipangu 0.3.3
 
 ## Fix

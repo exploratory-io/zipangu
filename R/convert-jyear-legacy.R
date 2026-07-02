@@ -27,6 +27,25 @@ convert_jyear_impl1 <- function(jyear) {
       stringr::str_extract(
         jyear_wareki,
         pattern = "[0-9]{1,2}"))
+
+  # Fall back to kansuji (kanji numeral) parsing for entries the ASCII-digit
+  # extraction above missed, e.g. \u4ee4\u548c\u4e09\u5e74 (Reiwa written with
+  # the kanji numeral \u4e09 "three" instead of the arabic digit 3). None of the
+  # era names in jyear_sets (\u660e\u6cbb/\u5927\u6b63/\u662d\u548c/\u5e73\u6210/\u4ee4\u548c
+  # or their single-character abbreviations) share characters with the
+  # kansuji-numeral set below, so this extraction is safe to run unconditionally
+  # on the untouched jyear_wareki string -- it can only ever match the year
+  # portion, never the era name. tam#36712 / R 4.6 ICU-performance follow-up.
+  kansuji_token <-
+    stringr::str_extract(
+      jyear_wareki,
+      "[\u3007\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u5341\u767e\u5343\u4e07\u5104\u5146\u4eac]+")
+  needs_kansuji <- is.na(wareki_yr) & !is.na(kansuji_token)
+  if (any(needs_kansuji)) {
+    wareki_yr[needs_kansuji] <-
+      suppressWarnings(as.integer(kansuji2arabic_num(kansuji_token[needs_kansuji])))
+  }
+
   wareki_roman <-
     stringr::str_sub(jyear_wareki, 1, 1) %>%
     purrr::map_chr(convert_jyear_roman)
