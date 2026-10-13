@@ -1,9 +1,8 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1.9000
-pkgdown_sha: 9c95f00d2505ddd83c4722e019202370715d3a3d
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
 articles: {}
-last_built: 2021-03-02T07:21Z
+last_built: 2026-10-13T02:57Z
 urls:
   reference: https://uribo.github.io/zipangu/reference
   article: https://uribo.github.io/zipangu/articles
-
