@@ -27,9 +27,13 @@ convert_jyear <- function(jyear, legacy = FALSE) {
 #' Convert Japanese date format to date object
 #' @description
 #' \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+#'
+#' Era dates ("R3.3.1", "H28/8/23") and era-less
+#' Western-year dates ("2016-08-23") are both converted. A value that cannot be
+#' parsed becomes `NA`. `Date` and `POSIXct` input is returned as a date.
 #' @param date A character object.
-#' @param legacy A logical to switch converter. If `TRUE` supplied, use the legacy
-#' converter instead of 'ICU' implementation.
+#' @param legacy Kept for backward compatibility. Both settings use the same
+#' converter, which does not use 'ICU' date parsing (exploratory-io/tam#39658).
 #' @section Examples:
 #' ```{r, child = "man/rmd/setup.Rmd"}
 #' ```
@@ -40,11 +44,40 @@ convert_jyear <- function(jyear, legacy = FALSE) {
 #' ```
 #' @export
 convert_jdate <- function(date, legacy = FALSE) {
-  if (legacy) {
-    convert_jdate_impl1(date)
-  } else {
-    convert_jdate_impl2(date)
+  # The ICU path (convert_jdate_impl2) read an era-less year as a year of the
+  # current era ("2016-08-23" -> "4034-08-23"), and ICU date parsing SIGABRTs
+  # R on macOS 26.4+. Both settings now use the pure-R converter.
+  if (inherits(date, "Date")) {
+    return(date)
   }
+  if (inherits(date, "POSIXt")) {
+    return(lubridate::as_date(date))
+  }
+  convert_jdate_safe(date)
+}
+
+# Converts each distinct value once with the pure-R converter.
+# An unparseable value becomes NA instead of stopping the whole vector.
+convert_jdate_safe <- function(date) {
+  date <- as.character(date)
+  uniq <- unique(date)
+  converted <- vapply(uniq, convert_jdate_one, numeric(1), USE.NAMES = FALSE)
+  as.Date(converted[match(date, uniq)], origin = "1970-01-01")
+}
+
+# Converts one value. Returns the date as a number of days, or NA.
+convert_jdate_one <- function(x) {
+  if (is.na(x) || !nzchar(trimws(x))) {
+    return(NA_real_)
+  }
+  res <- tryCatch(
+    suppressWarnings(convert_jdate_impl1(x)),
+    error = function(e) NULL
+  )
+  if (length(res) != 1 || !inherits(res, "Date")) {
+    return(NA_real_)
+  }
+  as.numeric(res)
 }
 
 convert_jyear_impl2 <- function(jyear) {

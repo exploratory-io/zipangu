@@ -9,11 +9,15 @@ convert_jdate(date, legacy = FALSE)
 \arguments{
 \item{date}{A character object.}
 
-\item{legacy}{A logical to switch converter. If \code{TRUE} supplied, use the legacy
-converter instead of 'ICU' implementation.}
+\item{legacy}{Kept for backward compatibility. Both settings use the same
+converter, which does not use 'ICU' date parsing (exploratory-io/tam#39658).}
 }
 \description{
 \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+
+Era dates ("R3.3.1", "H28/8/23") and era-less
+Western-year dates ("2016-08-23") are both converted. A value that cannot be
+parsed becomes \code{NA}. \code{Date} and \code{POSIXct} input is returned as a date.
 }
 \section{Examples}{
 

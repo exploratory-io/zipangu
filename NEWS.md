@@ -1,3 +1,17 @@
+# zipangu 0.3.3.2 (exploratory-io fork)
+
+## Fix
+
+- `convert_jdate()` no longer uses ICU date parsing (exploratory-io/tam#39658).
+  - An era-less value was read as a year of the current era, so "2016-08-23"
+    and "2016年8月23日" became "4034-08-23". They now keep their year.
+  - ICU date parsing in stringi SIGABRTs R on macOS 26.4+ (Apple Silicon).
+  - `Date` and `POSIXct` input is returned as a date.
+  - An unparseable value ("", "令和3年", "R3.13.1") becomes `NA` instead of
+    stopping the whole vector.
+  - `legacy` is kept for backward compatibility; both settings use the same
+    pure-R converter.
+
 # zipangu 0.3.3.1 (exploratory-io fork)
 
 ## Fix
