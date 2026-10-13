@@ -6,24 +6,20 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/zipangu)](https://cran.r-project.org/package=zipangu)
+stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![CRAN_Status_Badge](https://badges.cranchecks.info/worst/zipangu.svg)](https://cran.r-project.org/package=zipangu)
 [![CRAN RStudio mirror
 downloads](http://cranlogs.r-pkg.org/badges/zipangu?color=FF5254)](https://cran.r-project.org/package=zipangu)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.2.0-blue.svg)](https://cran.r-project.org/)
-
-[![Travis build
-status](https://travis-ci.org/uribo/zipangu.svg?branch=master)](https://travis-ci.org/uribo/zipangu)
-[![R build
-status](https://github.com/uribo/zipangu/workflows/Pkgdown/badge.svg)](https://github.com/uribo/zipangu)
 [![Codecov test
-coverage](https://codecov.io/gh/uribo/zipangu/branch/master/graph/badge.svg)](https://codecov.io/gh/uribo/zipangu?branch=master)
+coverage](https://codecov.io/gh/uribo/zipangu/branch/master/graph/badge.svg)](https://app.codecov.io/gh/uribo/zipangu?branch=master)
+[![R-CMD-check](https://github.com/uribo/zipangu/workflows/R-CMD-check/badge.svg)](https://github.com/uribo/zipangu/actions)
 <!-- badges: end -->
 
 The goal of `{zipangu}` is to replace the functionality provided by the
 `{Nippon}` archived from CRAN. Add some functions to make it easier to
-treat data that address, year, and Kanji.
+treat data that address, year, Kanji and Kana.
 
 ## Installation
 
@@ -82,7 +78,7 @@ read_zipcode(system.file("zipcode_dummy/13TOKYO_oogaki.CSV", package = "zipangu"
 #>   jis_code old_zip_code zip_code prefecture_kana city_kana street_kana
 #>   <chr>    <chr>        <chr>    <chr>           <chr>     <chr>      
 #> 1 13101    100          1000001  トウキヨウト    チヨダク  チヨダ     
-#> # … with 9 more variables: prefecture <chr>, city <chr>, street <chr>,
+#> # ℹ 9 more variables: prefecture <chr>, city <chr>, street <chr>,
 #> #   is_street_duplicate <dbl>, is_banchi <dbl>, is_cyoumoku <dbl>,
 #> #   is_zipcode_duplicate <dbl>, status <dbl>, modify_type <dbl>
 ```
@@ -130,79 +126,79 @@ convert_jdate("平成元年11月25日")
 Given a year and holiday name as input, returns the date.
 
 ``` r
-jholiday_spec(2021, "New Year's Day", lang = "en")
-#> [1] "2021-01-01"
+jholiday_spec(2022, "New Year's Day", lang = "en")
+#> [1] "2022-01-01"
 ```
 
 Holiday names can be specified in English (“en”) and Japanese (“jp”) by
 default, en is used.
 
 ``` r
-jholiday_spec(2021, "Coming of Age Day", lang = "en")
-#> [1] "2021-01-11"
-jholiday_spec(2021, "\u6210\u4eba\u306e\u65e5", lang = "jp")
-#> [1] "2021-01-11"
+jholiday_spec(2022, "Coming of Age Day", lang = "en")
+#> [1] "2022-01-10"
+jholiday_spec(2022, "\u6210\u4eba\u306e\u65e5", lang = "jp")
+#> [1] "2022-01-10"
 ```
 
 Check the list of holidays for a year with the `jholiday()`.
 
 ``` r
-jholiday(2021, lang = "jp")
+jholiday(2022, lang = "jp")
 #> $元日
-#> [1] "2021-01-01"
+#> [1] "2022-01-01"
 #> 
 #> $成人の日
-#> [1] "2021-01-11"
+#> [1] "2022-01-10"
 #> 
 #> $建国記念の日
-#> [1] "2021-02-11"
+#> [1] "2022-02-11"
 #> 
 #> $天皇誕生日
-#> [1] "2021-02-23"
+#> [1] "2022-02-23"
 #> 
 #> $春分の日
-#> [1] "2021-03-20"
+#> [1] "2022-03-21"
 #> 
 #> $昭和の日
-#> [1] "2021-04-29"
+#> [1] "2022-04-29"
 #> 
 #> $憲法記念日
-#> [1] "2021-05-03"
+#> [1] "2022-05-03"
 #> 
 #> $みどりの日
-#> [1] "2021-05-04"
+#> [1] "2022-05-04"
 #> 
 #> $こどもの日
-#> [1] "2021-05-05"
+#> [1] "2022-05-05"
 #> 
 #> $海の日
-#> [1] "2021-07-22"
-#> 
-#> $スポーツの日
-#> [1] "2021-07-23"
+#> [1] "2022-07-18"
 #> 
 #> $山の日
-#> [1] "2021-08-08"
+#> [1] "2022-08-11"
 #> 
 #> $敬老の日
-#> [1] "2021-09-20"
+#> [1] "2022-09-19"
 #> 
 #> $秋分の日
-#> [1] "2021-09-23"
+#> [1] "2022-09-23"
+#> 
+#> $スポーツの日
+#> [1] "2022-10-10"
 #> 
 #> $文化の日
-#> [1] "2021-11-03"
+#> [1] "2022-11-03"
 #> 
 #> $勤労感謝の日
-#> [1] "2021-11-23"
+#> [1] "2022-11-23"
 ```
 
 Use `is_jholiday()` function to evaluate whether today is a holiday.
 
 ``` r
-is_jholiday("2021-01-11")
+is_jholiday("2022-01-10")
 #> [1] TRUE
-is_jholiday("2021-02-23")
+is_jholiday("2022-02-23")
 #> [1] TRUE
 ```
 
@@ -276,5 +272,26 @@ jpnprefs
 #>  8 08       茨城県           Ibaraki-ken   Kanto    Honshu      
 #>  9 09       栃木県           Tochigi-ken   Kanto    Honshu      
 #> 10 10       群馬県           Gunma-ken     Kanto    Honshu      
-#> # … with 37 more rows
+#> # ℹ 37 more rows
+```
+
+### Kana (hiragana and katakana)
+
+``` r
+kana(type = "hira")
+#>  [1] "あ" "い" "う" "え" "お" "か" "き" "く" "け" "こ" "さ" "し" "す" "せ" "そ"
+#> [16] "た" "ち" "つ" "て" "と" "な" "に" "ぬ" "ね" "の" "は" "ひ" "ふ" "へ" "ほ"
+#> [31] "ま" "み" "む" "め" "も" "や" "ゆ" "よ" "ら" "り" "る" "れ" "ろ" "わ" "を"
+#> [46] "ん"
+
+kana(type = "hira", core = FALSE, historical = TRUE)
+#> [1] "ゐ" "ゑ"
+
+kana(type = "kata", dakuon = TRUE, handakuon = TRUE, kogaki = TRUE)
+#>  [1] "ァ" "ア" "ィ" "イ" "ゥ" "ウ" "ェ" "エ" "ォ" "オ" "カ" "ガ" "キ" "ギ" "ク"
+#> [16] "グ" "ケ" "ゲ" "コ" "ゴ" "サ" "ザ" "シ" "ジ" "ス" "ズ" "セ" "ゼ" "ソ" "ゾ"
+#> [31] "タ" "ダ" "チ" "ヂ" "ッ" "ツ" "ヅ" "テ" "デ" "ト" "ド" "ナ" "ニ" "ヌ" "ネ"
+#> [46] "ノ" "ハ" "バ" "パ" "ヒ" "ビ" "ピ" "フ" "ブ" "プ" "ヘ" "ベ" "ペ" "ホ" "ボ"
+#> [61] "ポ" "マ" "ミ" "ム" "メ" "モ" "ャ" "ヤ" "ュ" "ユ" "ョ" "ヨ" "ラ" "リ" "ル"
+#> [76] "レ" "ロ" "ヮ" "ワ" "ヲ" "ン" "ヴ"
 ```

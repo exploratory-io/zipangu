@@ -3,11 +3,14 @@
 #' \Sexpr[results=rd, stage=render]{lifecycle::badge("experimental")}
 #' @details Holiday information refers to data published as of December 21, 2020.
 #' Future holidays are subject to change.
-#' @param year numeric year and in and after 1949.
-#' @param name holiday name
-#' @param lang return holiday names to "en" or "jp".
+#' @param year numeric years after 1949.
+#' If `NA` supplied, `jholiday_spec` returns `NA` respectively.
+#' On the other hand, `jholiday` always omits any `NA` values.
+#' @param name holiday names.
+#' If this argument is not the same length of year, the first element will be recycled.
+#' @param lang switch for turning values to "en" or "jp".
 #' @references Public Holiday Law [https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html](https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html),
-#' [https://elaws.e-gov.go.jp/document?lawid=323AC1000000178](https://elaws.e-gov.go.jp/document?lawid=323AC1000000178)
+#' [https://laws.e-gov.go.jp/document?lawid=323AC1000000178](https://laws.e-gov.go.jp/document?lawid=323AC1000000178)
 #' @rdname jholiday
 #' @section Examples:
 #' ```{r, child = "man/rmd/setup.Rmd"}
@@ -21,14 +24,51 @@
 #' ```{r}
 #' jholiday(2021, "en")
 #' ```
+#' @importFrom rlang :=
 #' @export
 jholiday_spec <- function(year, name, lang = "en") {
-  jholiday_names <- jholiday_list[[lang]]
-
   if (are_all_current_law_yr(year)) {
-    if (!name %in% jholiday_names) {
-      rlang::abort(sprintf("No such holiday: %s", name))
+    if (length(year) < length(name))
+      rlang::abort("`year` must be a vector of length 1 or longer length than `name`.")
+    if (!identical(length(name), 1L) & (length(year) > length(name))) {
+      rlang::warn(
+        paste("`name` is expected to be a vector of length 1 or the same length of `year`.",
+              "the first element of `name` is recycled."
+        ))
+      name <- name[1]
     }
+    jholiday_names <- jholiday_list[[lang]]
+    if (!purrr::every(name, ~ match(., jholiday_names, nomatch = 0) > 0)) {
+      rlang::abort(
+        sprintf("No such holiday: %s",
+                purrr::discard(name, ~ match(., jholiday_names, nomatch = 0) > 0))
+      )
+    }
+    res <-
+      purrr::map2(year, name, function(yr, nm) {
+        fn_name <- paste("jholiday_spec", yr, lang, sep = "_")
+        if (!rlang::env_has(.pkgenv, fn_name)) {
+          rlang::env_bind(
+            .pkgenv,
+            !!fn_name := memoise::memoise(jholiday_spec_impl()(yr, lang))
+          )
+        }
+        rlang::env_get(.pkgenv, fn_name, inherit = TRUE)(nm)
+      }) %>%
+        unlist() %>%
+        lubridate::as_date()
+    res
+  }
+}
+
+#' @noRd
+jholiday_spec_impl <- function() {
+  fn <- function(year, name, lang) {
+    if (!is.numeric(year) || is.na(year)) {
+      # early return
+      return(lubridate::as_date(NA_character_))
+    }
+    jholiday_names <- jholiday_list[[lang]]
     dplyr::case_when(
       # New Year's Day
       name == jholiday_names[1] ~
@@ -115,6 +155,9 @@ jholiday_spec <- function(year, name, lang = "en") {
       TRUE ~ lubridate::as_date(NA_character_)
     )
   }
+  function(year, lang) {
+    purrr::partial(fn, year = year, lang = lang)
+  }
 }
 
 #' @rdname jholiday
@@ -130,20 +173,24 @@ jholiday <- function(year, lang = "en") {
       res[!duplicated(res)]
     res <-
       res %>%
-      purrr::discard(~ all(is.na(.)))
-    if (length(year) == 1L) {
-      res <-
-        purrr::flatten_dbl(res) %>%
+      purrr::discard(~ all(is.na(.))) %>%
+      purrr::imap(function(x, y) {
+        sort(x)
+      })
+    res <-
+      res[res %>%
+          purrr::map(1) %>%
+          purrr::flatten_dbl() %>%
           purrr::set_names(names(res)) %>%
           sort() %>%
-          purrr::map(lubridate::as_date)
-    }
+          names()]
     res
   }
 }
 
 are_all_current_law_yr <- function(years) {
-  checked <- all(years >= 1948)
+  # This check omits any NAs, NULL, and empty strings for convenience.
+  checked <- all(as.numeric(years) >= 1948, na.rm = TRUE)
   if (!checked)
     rlang::warn("The year specified must be after the law was enacted in 1948")
   checked
@@ -202,13 +249,15 @@ is_jholiday <- function(date) {
   date <-
     lubridate::as_date(date)
   yr <-
-    unique(lubridate::year(date))
+    unique(lubridate::year(date[!is.na(date)]))
   jholidays <-
     unique(c(
       jholiday_df$date,            # Holidays from https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv
       lubridate::as_date(unlist(jholiday(yr, "en")))   # Calculated holidays
     ))
-  date %in% jholidays
+
+  # exclude NA from jholidays then check if the date is Japanese Holiday or not.
+  date %in% jholidays[!is.na(jholidays)]
 }
 
 #' Find out the date of the specific month and weekday
@@ -227,8 +276,10 @@ is_jholiday <- function(date) {
 find_date_by_wday <- function(year, month, wday, ordinal) {
   date_begin <-
     lubridate::make_date(year, month)
+  # If the lubridate.week.start option is set, lubridate::wday results is affected by it.
+  # To get the correct Japanese Holiday information, explicitly pass Sunday (7) as week_start.
   wday_of_date_begin <-
-    lubridate::wday(date_begin)
+    lubridate::wday(date_begin, week_start = 7)
   # First dates of the specified wday on each year-month
   first_wday <-
     date_begin + (wday - wday_of_date_begin) %% 7

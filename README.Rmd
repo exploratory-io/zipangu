@@ -16,16 +16,14 @@ knitr::opts_chunk$set(
 # zipangu <img src="man/figures/logo.png" align="right" width="120px" />
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html) 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/zipangu)](https://cran.r-project.org/package=zipangu)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html) 
+[![CRAN\_Status\_Badge](https://badges.cranchecks.info/worst/zipangu.svg)](https://cran.r-project.org/package=zipangu)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/zipangu?color=FF5254)](https://cran.r-project.org/package=zipangu) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.0-blue.svg)](https://cran.r-project.org/)
-
-[![Travis build status](https://travis-ci.org/uribo/zipangu.svg?branch=master)](https://travis-ci.org/uribo/zipangu)
-[![R build status](https://github.com/uribo/zipangu/workflows/Pkgdown/badge.svg)](https://github.com/uribo/zipangu)
-[![Codecov test coverage](https://codecov.io/gh/uribo/zipangu/branch/master/graph/badge.svg)](https://codecov.io/gh/uribo/zipangu?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/uribo/zipangu/branch/master/graph/badge.svg)](https://app.codecov.io/gh/uribo/zipangu?branch=master)
+[![R-CMD-check](https://github.com/uribo/zipangu/workflows/R-CMD-check/badge.svg)](https://github.com/uribo/zipangu/actions)
 <!-- badges: end -->
 
-The goal of `{zipangu}` is to replace the functionality provided by the `{Nippon}` archived from CRAN. Add some functions to make it easier to treat data that address, year, and Kanji.
+The goal of `{zipangu}` is to replace the functionality provided by the `{Nippon}` archived from CRAN. Add some functions to make it easier to treat data that address, year, Kanji and Kana.
 
 ## Installation
 
@@ -106,25 +104,26 @@ convert_jdate("平成元年11月25日")
 Given a year and holiday name as input, returns the date.
 
 ```{r}
-jholiday_spec(2021, "New Year's Day", lang = "en")
+jholiday_spec(2022, "New Year's Day", lang = "en")
 ```
 Holiday names can be specified in English ("en") and Japanese ("jp") by default, en is used.
 
 ```{r}
-jholiday_spec(2021, "Coming of Age Day", lang = "en")
-jholiday_spec(2021, "\u6210\u4eba\u306e\u65e5", lang = "jp")
+jholiday_spec(2022, "Coming of Age Day", lang = "en")
+jholiday_spec(2022, "\u6210\u4eba\u306e\u65e5", lang = "jp")
 ```
 
 Check the list of holidays for a year with the `jholiday()`.
 
 ```{r}
-jholiday(2021, lang = "jp")
+jholiday(2022, lang = "jp")
 ```
+
 Use `is_jholiday()` function to evaluate whether today is a holiday.
 
 ```{r}
-is_jholiday("2021-01-11")
-is_jholiday("2021-02-23")
+is_jholiday("2022-01-10")
+is_jholiday("2022-02-23")
 ```
 
 ### Convert
@@ -193,3 +192,14 @@ ggsave("man/figures/readme_demo_label_kansuji_suffix.png",
 ```{r}
 jpnprefs
 ```
+
+### Kana (hiragana and katakana)
+
+```{r}
+kana(type = "hira")
+
+kana(type = "hira", core = FALSE, historical = TRUE)
+
+kana(type = "kata", dakuon = TRUE, handakuon = TRUE, kogaki = TRUE)
+```
+

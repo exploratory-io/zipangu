@@ -1,6 +1,6 @@
 Package: zipangu
 Title: Japanese Utility Functions and Data
-Version: 0.2.3.9000
+Version: 0.3.3.2
 Authors@R: 
     c(person(given = "Shinya",
              family = "Uryu",
@@ -36,6 +36,7 @@ Imports:
     lifecycle (>= 0.1.0),
     lubridate (>= 1.7.4),
     magrittr (>= 1.5),
+    memoise,
     purrr (>= 0.3.3),
     rlang (>= 0.4.0),
     stringi (>= 1.4.3),
@@ -44,10 +45,10 @@ Imports:
     arabic2kansuji (>= 0.1.0),
     stats
 Suggests: 
-    covr (>= 3.4.0),
+    curl,
     testthat (>= 2.1.0),
     scales (>= 1.1.0)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2

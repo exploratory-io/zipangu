@@ -4,19 +4,28 @@
 \alias{convert_jdate}
 \title{Convert Japanese date format to date object}
 \usage{
-convert_jdate(date)
+convert_jdate(date, legacy = FALSE)
 }
 \arguments{
-\item{date}{a character object.}
+\item{date}{A character object.}
+
+\item{legacy}{Kept for backward compatibility. Both settings use the same
+converter, which does not use 'ICU' date parsing (exploratory-io/tam#39658).}
 }
 \description{
 \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+
+Era dates ("R3.3.1", "H28/8/23") and era-less
+Western-year dates ("2016-08-23") are both converted. A value that cannot be
+parsed becomes \code{NA}. \code{Date} and \code{POSIXct} input is returned as a date.
 }
 \section{Examples}{
-\if{html}{\out{<div class="r">}}\preformatted{convert_jdate("R3/2/27")
-}\if{html}{\out{</div>}}\preformatted{## [1] "2021-02-27"
-}\if{html}{\out{<div class="r">}}\preformatted{convert_jdate("\\u4ee4\\u548c2\\u5e747\\u67086\\u65e5")
-}\if{html}{\out{</div>}}\preformatted{## [1] "2020-07-06"
-}
+
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{convert_jdate("R3/2/27")
+#> [1] "2021-02-27"
+convert_jdate("\\u4ee4\\u548c2\\u5e747\\u67086\\u65e5")
+#> [1] "2020-07-06"
+}\if{html}{\out{</div>}}
 }
 

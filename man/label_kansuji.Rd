@@ -36,7 +36,8 @@ label_kansuji_suffix(
 \item{number}{If Number is arabic, it will return a mixture of Arabic and the
 Kansuji Myriad Scale; if Kansuji, it will return only Kansuji numerals.}
 
-\item{...}{Other arguments passed on to \code{\link[base:formatc]{base::prettyNum()}} or \code{\link[scales:label_number]{scales::label_number()}}.}
+\item{...}{Other arguments passed on to \code{\link[base:formatc]{base::prettyNum()}}, \code{\link[scales:label_number]{scales::label_number()}} or
+\code{\link[arabic2kansuji:arabic2kansuji]{arabic2kansuji::arabic2kansuji_all()}}.}
 
 \item{accuracy}{A number to round to. Use (e.g.) 0.01 to show 2 decimal
 places of precision.}
@@ -44,7 +45,7 @@ places of precision.}
 \item{significant.digits}{Determines whether or not the value of accurary is
 valid as a significant figure with a decimal point. The default is FALSE, in
 which case if accurary is 2 and the value is 1.10, 1.1 will be displayed,
-but if TRUE and installed '{scales}` package, 1.10 will be displayed.}
+but if TRUE and installed \code{{scales}} package, 1.10 will be displayed.}
 }
 \value{
 All \code{label_()} functions return a "labelling" function, i.e. a function
@@ -61,7 +62,9 @@ Use \code{\link[=label_kansuji_suffix]{label_kansuji_suffix()}} converts the lab
 followed by the Kansuji Scale with the suffix.
 }
 \section{Examples}{
-\if{html}{\out{<div class="r">}}\preformatted{library("scales")
+
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library("scales")
 demo_continuous(c(1, 1e9), label = label_kansuji())
 demo_continuous(c(1, 1e9), label = label_kansuji_suffix())
 }\if{html}{\out{</div>}}
